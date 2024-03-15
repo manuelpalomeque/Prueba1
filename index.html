@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>CONI Sample Web Chat</title> 
+  <title>Contoso Sample Web Chat</title> 
 <script src="https://cdn.botframework.com/botframework-webchat/latest/webchat.js"></script>
 <script type="text/javascript" src="https://alcdn.msauth.net/lib/1.2.0/js/msal.js"></script>
 <script src="https://unpkg.com/@azure/storage-blob@10.3.0/browser/azure-storage.blob.min.js"
@@ -9,6 +9,24 @@
   crossorigin="anonymous"></script>
 <script type="text/javascript">
   if (typeof Msal === 'undefined') document.write(unescape("%3Cscript src='https://alcdn.msftauth.net/lib/1.2.0/js/msal.js' type='text/javascript' %3E%3C/script%3E"));
+</script>
+<script>
+    var clientApplication;
+     (function (){
+       var msalConfig = {
+	   auth: {
+	     clientId: 'b6dfb15f-e770-41a1-924d-81171a6e1f15',
+	     authority: 'https://login.microsoftonline.com/ec6e7548-fce3-4f44-966a-f47a0f125a81'
+	   },
+	   cache: {
+	     cacheLocation: 'localStorage',
+	     storeAuthStateInCookie: false
+	   }
+       };
+       if (!clientApplication) {
+	 clientApplication = new Msal.UserAgentApplication(msalConfig);
+       }
+     } ());
 </script>
 
   <style>
@@ -30,7 +48,7 @@
       }
 
       #heading {
-	  background-color: rgb(0, 0, 0);
+	  background-color: black;
 	  height: 50px;
       }
 
@@ -51,7 +69,7 @@
 	  overflow: hidden;
       }
   #heading {
-    background-color: rgb(142, 127, 226);
+    background-color: black;
     background-repeat: no-repeat;
     background-size: cover;
     background-attachment: fixed;
@@ -92,22 +110,21 @@
   </style>
 
 </head>
-<body>
+<body onload="onSignInClick()">
 <div id="chatwindow">
   <div id="heading">
-    <div><span>SSO Test CONI</span></div>
+    <div><span>SSO Test Bot</span></div>
   </div>
   <div style="z-index: 100;position: absolute;margin-top: 50px;width: 100%;">
   <div>
-    <label id="userName" name="userName" style="width:75%;height:15px;border-color: Transparent;">No esta logueado.</label>
-    <button id="login" name="login" onclick="onSignInClick()" style="float: right;background-color: aliceblue;">iniciar Sesión</button>
+    <label id="userName" name="userName" style="width:75%;height:15px;border-color: Transparent;">Not logged in.</label>
+    <button id="login" name="login" onclick="onSignInClick()" style="float: right;background-color: aliceblue;">Log In</button>
   </div>
 </div>
   <div id="webchat">
   </div>
 
-</div>
-
+</div>	
 <script>
 function onSignin(idToken) {
       let user = clientApplication.getAccount();
@@ -115,6 +132,7 @@ function onSignin(idToken) {
       let requestObj1 = {
 	scopes: ["user.read", 'openid', 'profile']
       };
+	reload();
     }
 
     function onSignInClick() {
@@ -123,6 +141,7 @@ function onSignin(idToken) {
       };
 
       clientApplication.loginPopup(requestObj).then(onSignin).catch(function (error) {console.log(error) });
+	  
     }
 
 function getOAuthCardResourceUri(activity) {
@@ -173,28 +192,13 @@ async function fetchJSON(url, options = {}) {
 </script>
 
 <script>
-     var clientApplication;
-     (function (){
-       var msalConfig = {
-	   auth: {
-	     clientId: 'b6dfb15f-e770-41a1-924d-81171a6e1f15',
-	     authority: 'https://login.microsoftonline.com/ec6e7548-fce3-4f44-966a-f47a0f125a81'
-	   },
-	   cache: {
-	     cacheLocation: 'localStorage',
-	     storeAuthStateInCookie: false
-	   }
-       };
-       if (!clientApplication) {
-	 clientApplication = new Msal.UserAgentApplication(msalConfig);
-       }
-     } ());
+ 
 
 (async function main() {
 
     // Add your BOT ID below 
     var theURL = "https://defaultec6e7548fce34f44966af47a0f125a.81.environment.api.powerplatform.com/powervirtualagents/botsbyschema/cr86f_coni30/directline/token?api-version=2022-03-01-preview" // you can find the token URL via the mobile app channel configuration
-
+     var userdetails = clientApplication.getAccount();
 	var userId = clientApplication.account?.accountIdentifier != null ? 
 					("You-customized-prefix" + clientApplication.account.accountIdentifier).substr(0, 64) 
 					: (Math.random().toString() + Date.now().toString()).substr(0,64);
@@ -209,7 +213,7 @@ async function fetchJSON(url, options = {}) {
 	  payload: {
 	    name: 'startConversation',
 	    type: 'event',
-	    value: { text: "hello" }
+	    value: { text: userdetails.name}
 	  }
 	});
 	return next(action);
