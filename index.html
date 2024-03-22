@@ -69,7 +69,7 @@
 	  overflow: hidden;
       }
   #heading {
-    background-color: black;
+    background-color: blue;
     background-repeat: no-repeat;
     background-size: cover;
     background-attachment: fixed;
@@ -128,7 +128,7 @@
 <script>
 function onSignin(idToken) {
       let user = clientApplication.getAccount();
-      document.getElementById("userName").innerHTML = "Hola " + user.name;
+      document.getElementById("userName").innerHTML = "" //"Hola " + user.name;
       let requestObj1 = {
 	scopes: ["user.read", 'openid', 'profile']
       };
