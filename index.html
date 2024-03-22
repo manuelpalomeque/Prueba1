@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Contoso Sample Web Chat</title> 
+  <title>CONI Web Chat</title> 
 <script src="https://cdn.botframework.com/botframework-webchat/latest/webchat.js"></script>
 <script type="text/javascript" src="https://alcdn.msauth.net/lib/1.2.0/js/msal.js"></script>
 <script src="https://unpkg.com/@azure/storage-blob@10.3.0/browser/azure-storage.blob.min.js"
@@ -48,7 +48,7 @@
       }
 
       #heading {
-	  background-color: black;
+	  background-color: blue;
 	  height: 50px;
       }
 
@@ -117,8 +117,8 @@
   </div>
   <div style="z-index: 100;position: absolute;margin-top: 50px;width: 100%;">
   <div>
-    <label id="userName" name="userName" style="width:75%;height:15px;border-color: Transparent;">Not logged in.</label>
-    <button id="login" name="login" onclick="onSignInClick()" style="float: right;background-color: aliceblue;">Log In</button>
+    <label id="userName" name="userName" style="width:75%;height:15px;border-color: Transparent;">No se encuentra logueado.</label>
+    <button id="login" name="login" onclick="onSignInClick()" style="float: right;background-color: aliceblue;">Iniciar Sesión</button>
   </div>
 </div>
   <div id="webchat">
@@ -128,7 +128,7 @@
 <script>
 function onSignin(idToken) {
       let user = clientApplication.getAccount();
-      document.getElementById("userName").innerHTML = "Currently logged in as " + user.name;
+      document.getElementById("userName").innerHTML = "Hola " + user.name;
       let requestObj1 = {
 	scopes: ["user.read", 'openid', 'profile']
       };
