@@ -1,314 +1,217 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>CONI Sample Web Chat</title> 
-  <script src="https://cdn.botframework.com/botframework-webchat/latest/webchat.js"></script>
-  <script type="text/javascript" src="https://alcdn.msauth.net/lib/1.2.0/js/msal.js"></script>
-  <script src="https://unpkg.com/@azure/storage-blob@10.3.0/browser/azure-storage.blob.min.js"
-          integrity="sha384-fsfhtLyVQo3L3Bh73qgQoRR328xEeXnRGdoi53kjo1uectCfAHFfavrBBN2Nkbdf"
-          crossorigin="anonymous"></script>
-  <script type="text/javascript">
-    if (typeof Msal === 'undefined') document.write(unescape("%3Cscript src='https://alcdn.msftauth.net/lib/1.2.0/js/msal.js' type='text/javascript' %3E%3C/script%3E"));
-  </script>
-
-  <style>
-    html, body {
-      height: 100%;
-    }
-
-    body {
-      margin: 0;
-    }
-
-    h1 {
-      font-size: 16px;
-      font-family: Segoe UI;
-      line-height: 20px;
-      color: whitesmoke;
-      display: table-cell;
-      padding: 13px 0px 0px 20px;
-    }
-
-    #heading {
-      background-color: black;
-      height: 50px;
-    }
-
-    .main {
-      margin: 18px;
-      border-radius: 4px;
-    }
-
-    div[role="form"] {
-      background-color: rgb(0, 0, 0);
-    }
-
-    #webchat {
-      position: fixed;
-      height: calc(100% - 50px);
-      width: 100%;
-      top: 50px;
-      overflow: hidden;
-    }
-
-    #heading {
-      background-color: black;
-      background-repeat: no-repeat;
-      background-size: cover;
-      background-attachment: fixed;
-      background-position: center;
-      height: 50px;
-      width: 100%;
-      overflow: hidden;
-      position: fixed;
-    }
-
-    h1 {
-      font-size: 14px;
-      font-family: Segoe UI;
-      font-style: normal;
-      font-weight: 600;
-      font-size: 14px;
-      line-height: 20px;
-      color: #F3F2F1;
-      letter-spacing: 0.005em;
-      display: table-cell;
-      vertical-align: middle;
-      padding: 13px 0px 0px 20px;
-    }
-
-    #chatwindow {
-      height: 80%;
-      width: 100%;
-      overflow: hidden;
-      position: fixed;
-    }
-
-    #loginButton {
-      height: 100px;
-      width: 100%;
-      position: fixed;
-    }
-  </style>
+  <title>Integration Example</title>
 </head>
-<body onload="onSignInClick()">
-<div id="chatwindow">
-  <div id="heading">
-    <div><span>SSO Test Bot</span></div>
-  </div>
-  <div style="z-index: 100;position: absolute;margin-top: 50px;width: 100%;">
-    <div style="width: 300px; height: 200px; border: 1px solid #000; overflow-y: auto; padding: 10px;">
-      <label id="userName" name="userName" style="width:75%;height:15px;border-color: Transparent;">Not logged in.</label>
-      <button id="login" name="login" onclick="onSignInClick()" style="float: right;background-color: aliceblue;">Log In</button>
-    </div>
-  </div>
-  <div id="webchat">
-  </div>
-</div>
-<script>
-  var clientApplication;
-  (function (){
-    var msalConfig = {
-      auth: {
-        clientId: 'b6dfb15f-e770-41a1-924d-81171a6e1f15',
-        authority: 'https://login.microsoftonline.com/ec6e7548-fce3-4f44-966a-f47a0f125a81'
-      },
-      cache: {
-        cacheLocation: 'localStorage',
-        storeAuthStateInCookie: false
-      }
-    };
-    if (!clientApplication) {
-      clientApplication = new Msal.UserAgentApplication(msalConfig);
-    }
-  } ());
+<body>
+  <script>
+    var clientApplication;
 
-function onSignin(idToken) {
-    let user = clientApplication.getAccount();
-
-    // Convertir el objeto user a una cadena JSON con formato
-    let userJson = JSON.stringify(user, null, 2); // El segundo parámetro es un replacer, y el tercer parámetro es el número de espacios para la indentación
-
-    // Mostrar la cadena JSON en el elemento con el ID userName
-    document.getElementById("userName").innerHTML = "<pre>" + userJson + "</pre>";
-
-    if (typeof reload === 'function') {
-        reload();
-    } else {
-        console.error("Error: La función reload no está definida.");
-    }
-}
-
-
-  function onSignInClick() {
-    let requestObj = {
-      scopes: ["user.read", 'openid', 'profile']
-    };
-
-    clientApplication.loginPopup(requestObj).then(onSignin).catch(function (error) {console.log(error) });
-
-  }
-
-  function getOAuthCardResourceUri(activity) {
-    if (activity &&
-      activity.attachments &&
-      activity.attachments[0] &&
-      activity.attachments[0].contentType === 'application/vnd.microsoft.card.oauth' &&
-      activity.attachments[0].content.tokenExchangeResource) {
-      return activity.attachments[0].content.tokenExchangeResource.uri;
-    }
-  }
-
-  function exchangeTokenAsync(resourceUri) {
-    let user = clientApplication.getAccount();
-    if (user) {
-      let requestObj = {
-        scopes: [resourceUri]
+    // Inicializa clientApplication
+    (function() {
+      var msalConfig = {
+        auth: {
+          clientId: 'b6dfb15f-e770-41a1-924d-81171a6e1f15',
+          authority: 'https://login.microsoftonline.com/ec6e7548-fce3-4f44-966a-f47a0f125a81'
+        },
+        cache: {
+          cacheLocation: 'localStorage',
+          storeAuthStateInCookie: false
+        }
       };
-      return clientApplication.acquireTokenSilent(requestObj)
-        .then(function (tokenResponse) {
-          return tokenResponse.accessToken;
-        })
-        .catch(function (error) {
-          console.log(error);
+
+      if (!clientApplication) {
+        clientApplication = new Msal.UserAgentApplication(msalConfig);
+        console.log('clientApplication initialized');
+      }
+    })();
+
+    // Función para manejar el inicio de sesión
+    function onSignin(idToken) {
+      let user = clientApplication.getAccount();
+      if (user) {
+        document.getElementById("userName").innerHTML = "Estas logueado como: " + user.name + " " + user;
+        console.log('User details:', user);
+        let requestObj1 = {
+          scopes: ["user.read", 'openid', 'profile']
+        };
+        reload();
+      } else {
+        console.error('No user found in onSignin');
+      }
+    }
+
+    // Función para manejar el clic en el botón de inicio de sesión
+    function onSignInClick() {
+      let requestObj = {
+        scopes: ["user.read", 'openid', 'profile']
+      };
+
+      clientApplication.loginPopup(requestObj)
+        .then(onSignin)
+        .catch(function(error) {
+          console.error('Login error:', error);
         });
     }
-    else {
-      return Promise.resolve(null);
-    }
-  }
 
-  async function fetchJSON(url, options = {}) {
-    const res = await fetch(url, {
-      ...options,
-      headers: {
-        ...options.headers,
-        accept: 'application/json'
+    // Función para obtener el URI del recurso OAuth
+    function getOAuthCardResourceUri(activity) {
+      if (activity &&
+        activity.attachments &&
+        activity.attachments[0] &&
+        activity.attachments[0].contentType === 'application/vnd.microsoft.card.oauth' &&
+        activity.attachments[0].content.tokenExchangeResource) {
+        return activity.attachments[0].content.tokenExchangeResource.uri;
       }
-    });
-
-    if (!res.ok) {
-      throw new Error(`Failed to fetch JSON due to ${res.status}`);
+      return null;
     }
 
-    return await res.json();
-  }
+    // Función para intercambiar el token de manera asíncrona
+    function exchangeTokenAsync(resourceUri) {
+      let user = clientApplication.getAccount();
+      if (user) {
+        let requestObj = {
+          scopes: [resourceUri]
+        };
+        return clientApplication.acquireTokenSilent(requestObj)
+          .then(function(tokenResponse) {
+            return tokenResponse.accessToken;
+          })
+          .catch(function(error) {
+            console.error('Token exchange error:', error);
+          });
+      } else {
+        console.error('No user found for token exchange');
+        return Promise.resolve(null);
+      }
+    }
 
-  async function main() {
-    var theURL = "https://de0b7d9b3f0c4469bde5acbfc0d015.15.environment.api.powerplatform.com/powervirtualagents/botsbyschema/cr7d6_pruebaOmni/directline/token?api-version=2022-03-01-preview"; // you can find the token URL via the mobile app channel configuration
-    var userdetails = clientApplication.getAccount();
-    var userId = clientApplication.account?.accountIdentifier != null ?
-      ("You-customized-prefix" + clientApplication.account.accountIdentifier).substr(0, 64)
-      : (Math.random().toString() + Date.now().toString()).substr(0, 64);
-
-    const { token } = await fetchJSON(theURL);
-    const directLine = window.WebChat.createDirectLine({ token });
-    const store = WebChat.createStore({}, ({ dispatch }) => next => action => {
-      const { type } = action;
-      if (action.type === 'DIRECT_LINE/CONNECT_FULFILLED') {
-        dispatch({
-          type: 'WEB_CHAT/SEND_EVENT',
-          payload: {
-            name: 'startConversation',
-            type: 'event',
-            value: { text: userdetails.name }
+    // Función para obtener JSON a partir de una URL
+    async function fetchJSON(url, options = {}) {
+      try {
+        const res = await fetch(url, {
+          ...options,
+          headers: {
+            ...options.headers,
+            accept: 'application/json'
           }
         });
-        return next(action);
+
+        if (!res.ok) {
+          throw new Error(`Failed to fetch JSON due to ${res.status}`);
+        }
+
+        return await res.json();
+      } catch (error) {
+        console.error('Fetch JSON error:', error);
+        throw error;
       }
-      if (action.type === 'DIRECT_LINE/INCOMING_ACTIVITY') {
-        const activity = action.payload.activity;
-        let resourceUri;
-        if (activity.from && activity.from.role === 'bot' &&
-          (resourceUri = getOAuthCardResourceUri(activity))) {
-          exchangeTokenAsync(resourceUri).then(function (token) {
-            if (token) {
-              directLine.postActivity({
-                type: 'invoke',
-                name: 'signin/tokenExchange',
-                value: {
-                  id: activity.attachments[0].content.tokenExchangeResource.id,
-                  connectionName: activity.attachments[0].content.connectionName,
-                  token
-                },
-                "from": {
-                  id: userId,
-                  name: clientApplication.account.name,
-                  role: "user"
+    }
+
+    // Función principal
+    async function main() {
+      try {
+        var theURL = "https://de0b7d9b3f0c4469bde5acbfc0d015.15.environment.api.powerplatform.com/powervirtualagents/botsbyschema/cr7d6_pruebaOmni/directline/token?api-version=2022-03-01-preview";
+        var userdetails = clientApplication.getAccount();
+        if (userdetails) {
+          var userId = clientApplication.account?.accountIdentifier != null ?
+            ("You-customized-prefix" + clientApplication.account.accountIdentifier).substr(0, 64)
+            : (Math.random().toString() + Date.now().toString()).substr(0, 64);
+
+          const { token } = await fetchJSON(theURL);
+          console.log('Direct Line token:', token);
+
+          const directLine = window.WebChat.createDirectLine({ token });
+          const store = WebChat.createStore({}, ({ dispatch }) => next => action => {
+            const { type } = action;
+            if (type === 'DIRECT_LINE/CONNECT_FULFILLED') {
+              dispatch({
+                type: 'WEB_CHAT/SEND_EVENT',
+                payload: {
+                  name: 'startConversation',
+                  type: 'event',
+                  value: { text: userdetails.name }
                 }
-              }).subscribe(
-                id => {
-                  if (id === 'retry') {
+              });
+              return next(action);
+            }
+            if (type === 'DIRECT_LINE/INCOMING_ACTIVITY') {
+              const activity = action.payload.activity;
+              let resourceUri;
+              if (activity.from && activity.from.role === 'bot' &&
+                (resourceUri = getOAuthCardResourceUri(activity))) {
+                exchangeTokenAsync(resourceUri).then(function(token) {
+                  if (token) {
+                    directLine.postActivity({
+                      type: 'invoke',
+                      name: 'signin/tokenExchange',
+                      value: {
+                        id: activity.attachments[0].content.tokenExchangeResource.id,
+                        connectionName: activity.attachments[0].content.connectionName,
+                        token
+                      },
+                      "from": {
+                        id: userId,
+                        name: clientApplication.account.name,
+                        role: "user"
+                      }
+                    }).subscribe(
+                      id => {
+                        if (id === 'retry') {
+                          return next(action);
+                        }
+                      },
+                      error => {
+                        console.error('Post activity error:', error);
+                        return next(action);
+                      }
+                    );
+                    return;
+                  } else {
                     return next(action);
                   }
-                },
-                error => {
-                  return next(action);
-                }
-              );
-              return;
-            }
-            else
+                });
+              } else {
+                return next(action);
+              }
+            } else {
               return next(action);
+            }
           });
+
+          const styleOptions = {
+            hideUploadButton: true
+          };
+
+          window.WebChat.renderWebChat(
+            {
+              directLine: directLine,
+              store,
+              userID: userId,
+              styleOptions
+            },
+            document.getElementById('webchat')
+          );
+        } else {
+          console.error('User details not found in main');
         }
-        else
-          return next(action);
+      } catch (error) {
+        console.error('Main function error:', error);
       }
-      else
-        return next(action);
-    });
+    }
 
-    const styleOptions = {
-      hideUploadButton: true
-    };
+    // Ejecuta la función principal y maneja errores
+    main().catch(err => console.error("An error occurred in main: " + err));
+  </script>
 
-    window.WebChat.renderWebChat(
-      {
-        directLine: directLine,
-        store,
-        userID: userId,
-        styleOptions
-      },
-      document.getElementById('webchat')
-    );
-  }
-
-  main().catch(err => console.error("An error occurred: " + err));
-
-  function contextProvider(){
-    return {
-      'Email': {'value' : user.userName, 'isDisplayable' : true},
-      'NombreCompleto': {'value' : user.name, 'isDisplayable' : true},
-      'Nombre': {'value' : nombre, 'isDisplayable' : true},
-      'Sector': {'value' : sector, 'isDisplayable' : true}
-    };
-  }
- 
-  window.addEventListener("lcw:ready", function handleLivechatReadyEvent(){
-    getEmailFromSharePoint().then(() => {
-      Microsoft.Omnichannel.LiveChatWidget.SDK.setContextProvider(contextProvider);
-      // ** I commented out the startChat, you might like it!
-      //Microsoft.Omnichannel.LiveChatWidget.SDK.startChat();
-    });
-  });
- 
-  window.addEventListener("lcw:error", function handleLivechatErrorEvent(errorEvent){
-    console.log(errorEvent);
-  });
-
-<script 
+  <!-- Script del Live Chat -->
+  <script 
     id="Microsoft_Omnichannel_LCWidget" 
-    src="
-https://oc-cdn-public.azureedge.net/livechatwidget/scripts/LiveChatBootstrapper.js"
- 
+    src="https://oc-cdn-public.azureedge.net/livechatwidget/scripts/LiveChatBootstrapper.js"
     data-app-id="70ec806d-33b3-433c-ae08-d1154e8f5d54" 
     data-lcw-version="prod" 
     data-org-id="e01710f5-3028-427e-a334-c25d52a4fb2f" 
-    data-org-url="
-https://unqe01710f53028427ea334c25d52a4f-crm2.omnichannelengagementhub.com">
-</script>
-  
-</script>
+    data-org-url="https://unqe01710f53028427ea334c25d52a4f-crm2.omnichannelengagementhub.com">
+  </script>
 </body>
 </html>
