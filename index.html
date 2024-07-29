@@ -97,7 +97,7 @@
 
     function onSignin(idToken) {
         let user = clientApplication.getAccount();
-        document.getElementById("userName").innerHTML = "Estas logueado como: " + user.name;
+        document.getElementById("userName").innerHTML = "Estas logueado como: " + user.name + user.content + user.account;
         reload();
     }
 
