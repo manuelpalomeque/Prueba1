@@ -96,10 +96,21 @@
     } ());
 
     function onSignin(idToken) {
-        let user = clientApplication.getAccount();
-        document.getElementById("userName").innerHTML = "Estas logueado como: " + user.name + " " + user;
+    let user = clientApplication.getAccount();
+
+    // Convertir el objeto user a una cadena JSON con formato
+    let userJson = JSON.stringify(user, null, 2); // El segundo parámetro es un replacer, y el tercer parámetro es el número de espacios para la indentación
+
+    // Mostrar la cadena JSON en el elemento con el ID userName
+    document.getElementById("userName").innerHTML = "<pre>" + userJson + "</pre>";
+
+    if (typeof reload === 'function') {
         reload();
+    } else {
+        console.error("Error: La función reload no está definida.");
     }
+}
+
 
     function onSignInClick() {
         let requestObj = {
