@@ -13,8 +13,9 @@
         data-org-url="https://unqe01710f53028427ea334c25d52a4f-crm2.omnichannelengagementhub.com">
     </script>
  
-    <script>
-        function setupBotAuthTokenProvider() {
+     <script>
+        // Define a function to initialize the SDK when it's ready
+        function initializeSdk() {
             if (window.Microsoft && window.Microsoft.Omnichannel && window.Microsoft.Omnichannel.LiveChatWidget && window.Microsoft.Omnichannel.LiveChatWidget.SDK) {
                 const signInIds = [];
                 window.Microsoft.Omnichannel.LiveChatWidget.SDK.setBotAuthTokenProvider(async (botTokenUrl, callback) => {
@@ -80,13 +81,12 @@
             }
         }
 
-        // Polling to check if the SDK is ready
-        const checkSdkInterval = setInterval(() => {
-            if (window.Microsoft && window.Microsoft.Omnichannel && window.Microsoft.Omnichannel.LiveChatWidget && window.Microsoft.Omnichannel.LiveChatWidget.SDK) {
-                clearInterval(checkSdkInterval);
-                setupBotAuthTokenProvider();
+        // Add an event listener for the 'lcw:ready' event
+        window.addEventListener('message', function(event) {
+            if (event.data && event.data.event === 'lcw:ready') {
+                initializeSdk();
             }
-        }, 1000); // Check every second
+        });
 
     </script>
 </body>
