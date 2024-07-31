@@ -4,43 +4,44 @@
     <title>Integration Example</title>
 </head>
 <body>
+     <!-- // Autenticacion, obtener el token:-->
     <script>
         async function getDirectLineToken() {
-  const url = 'https://directline.botframework.com/v3/directline/tokens/generate';
-  const secret = 'f885b0cf-ef43-456e-99d2-d72226096f20'; // Reemplaza con tu secreto
+        const url = 'https://directline.botframework.com/v3/directline/tokens/generate';
+        const secret = '_OC1MTvgpuc.cL5xer8LYHd5ccEpoZpKRehIfXCF97_Rxt8eJhnSqVU'; // Reemplaza con tu secreto
 
-  console.log('URL:', url);
-  console.log('Secret:', secret);
+        console.log('URL:', url);
+        console.log('Secret:', secret);
 
-  try {
-    const response = await fetch(url, {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${secret}`,
-        'Content-Type': 'application/json'
-      }
-    });
+        try {
+            const response = await fetch(url, {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${secret}`,
+                'Content-Type': 'application/json'
+            }
+            });
 
-    console.log('Response status:', response.status);
+            console.log('Response status:', response.status);
 
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
+            if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+            }
 
-    const result = await response.json();
-    console.log('Response JSON:', result);
+            const result = await response.json();
+            console.log('Response JSON:', result);
 
-    const token = result.token; // Ajusta esto según la estructura de la respuesta de tu API
-    console.log('Token:', token);
+            const token = result.token; // Ajusta esto según la estructura de la respuesta de tu API
+            console.log('Token:', token);
 
-    // Aquí puedes hacer uso del token como necesites
-  } catch (error) {
-    console.error('Error fetching token:', error);
-  }
-}
+            // Aquí puedes hacer uso del token como necesites
+        } catch (error) {
+            console.error('Error fetching token:', error);
+        }
+        }
 
-// Llama a la función para obtener el token
-getDirectLineToken();
-    </script>
+        // Llama a la función para obtener el token
+        getDirectLineToken();
+      </script>
 </body>
 </html>
