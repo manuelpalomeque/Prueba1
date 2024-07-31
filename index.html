@@ -1,47 +1,44 @@
 <!DOCTYPE html>
-<html>
+<html lang="es">
 <head>
-    <title>Integration Example</title>
+    <title>Web Chat: Full-featured bundle</title>
+
+    <script src="https://cdn.botframework.com/botframework-webchat/latest/webchat.js"></script>
+
+    <style>
+    html, body { height: 100% }
+    body {
+      margin: 0;
+      background-color: paleturquoise;
+    }
+    #webchat {
+      height: 100%;
+      width: 100%;
+    }
+  </style>
 </head>
 <body>
-     <!-- // Autenticacion, obtener el token:-->
+       <div id="webchat" role="main"></div>
     <script>
-        async function getDirectLineToken() {
-        const url = 'https://directline.botframework.com/v3/directline/tokens/generate';
-        const secret = '_OC1MTvgpuc.cL5xer8LYHd5ccEpoZpKRehIfXCF97_Rxt8eJhnSqVU'; // Reemplaza con tu secreto
+    (async function () {
+        const res = await fetch('https://directline.botframework.com/v3/directline/conversations', 
+{ method: 'POST', headers: { Authorization: 'Bearer ***************Insert Direct Line Secret here *******************' }});
 
-        console.log('URL:', url);
-        console.log('Secret:', secret);
+      const { token } = await res.json();
 
-        try {
-            const response = await fetch(url, {
-            method: 'POST',
-            headers: {
-                'Authorization': `Bearer ${secret}`,
-                'Content-Type': 'application/json'
-            }
-            });
-
-            console.log('Response status:', response.status);
-
-            if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-            }
-
-            const result = await response.json();
-            console.log('Response JSON:', result);
-
-            const token = result.token; // Ajusta esto según la estructura de la respuesta de tu API
-            console.log('Token:', token);
-
-            // Aquí puedes hacer uso del token como necesites
-        } catch (error) {
-            console.error('Error fetching token:', error);
-        }
-        }
-
-        // Llama a la función para obtener el token
-        getDirectLineToken();
-      </script>
+      (async function () {
+	window.WebChat.renderWebChat({
+      directLine: window.WebChat.createDirectLine({ token }),
+      styleOptions: {
+        rootHeight: '100%',
+        rootWidth: '50%',
+		bubbleMaxWidth: 1200,               
+        botAvatarInitials: 'C',                
+        userAvatarInitials: 'A',  
+      }
+    }, document.getElementById('webchat'));
+    })()
+    })().catch(err => console.error(err));
+   </script>
 </body>
 </html>
